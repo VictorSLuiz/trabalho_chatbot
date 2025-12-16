@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Chatbot com Voz e Texto</title>
+<style>
+   /* --- Configurações Gerais --- */
+    body {
+        font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; /* Fonte limpa e profissional */
+        /* Gradiente suave lembrando ambiente clínico estéril e calmo */
+        background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+        position: relative;
+        color: #37474f; /* Cinza escuro para facilitar leitura */
+    }
+
+    /* --- Posicionamento da Logo --- */
+    .logo-link {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+    }
+
+    /* --- Estilo da Imagem da Logo --- */
+    .logo-img {
+        width: 140px; /* Reduzi levemente para ficar mais elegante */
+        height: 140px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: white; /* Caso a imagem seja transparente */
+        /* Sombra suave e borda estilo "botão de emergência" ou identificação */
+        box-shadow: 0 8px 20px rgba(0, 150, 136, 0.2); 
+        border: 4px solid #ffffff;
+    }
+
+    /* --- Container do Chatbox (Prancheta Digital) --- */
+    .chatbox {
+        background: #ffffff;
+        padding: 40px 30px 30px 30px; /* Mais espaço no topo por causa da logo */
+        border-radius: 20px;
+        /* Sombra difusa para dar profundidade */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        max-width: 380px;
+        width: 100%;
+        text-align: center;
+        /* Borda superior na cor "Verde Cirúrgico" (Teal) */
+        border-top: 8px solid #009688; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 80px; 
+        position: relative;
+    }
+
+    .chatbox:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(0, 150, 136, 0.15);
+    }
+
+    /* --- Título --- */
+    h2 {
+        color: #00796b; /* Verde escuro clínico */
+        margin-top: 30px; /* Empurrar para baixo da logo */
+        margin-bottom: 20px;
+        font-size: 1.6em;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- Botão Principal --- */
+    button {
+        margin-top: 20px;
+        padding: 15px 25px;
+        width: 100%;
+        cursor: pointer;
+        /* Gradiente Verde Enfermagem */
+        background: linear-gradient(to right, #009688, #4db6ac);
+        color: white;
+        border: none;
+        border-radius: 50px; /* Formato de pílula/cápsula */
+        font-size: 1.1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 150, 136, 0.3);
+        outline: none;
+    }
+
+    /* Efeitos do Botão */
+    button:hover {
+        background: linear-gradient(to right, #00796b, #009688);
+        box-shadow: 0 8px 20px rgba(0, 150, 136, 0.4);
+        transform: scale(1.02);
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    button:focus {
+        outline: 3px solid #b2dfdb;
+    }
+
+    /* --- Área de Resposta (Texto que aparece depois de falar) --- */
+    #respostaTexto {
+        margin-top: 25px;
+        min-height: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #f1f8e9; /* Fundo verde muito pálido */
+        color: #33691e; /* Texto verde escuro para contraste */
+        font-size: 1.05em;
+        line-height: 1.5;
+        border-left: 4px solid #8bc34a; /* Detalhe lateral de destaque */
+        text-align: left; /* Melhor leitura para textos longos */
+        transition: all 0.3s ease;
+    }
+    
+    /* Se estiver vazio, esconde a borda para ficar limpo */
+    #respostaTexto:empty {
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+    /* --- Responsividade --- */
+    @media (max-width: 400px) {
+        .chatbox {
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+        .logo-img {
+            width: 100px;
+            height: 100px;
+        }
+        .logo-link {
+            top: 50px;
+        }
+        h2 {
+            margin-top: 20px;
+            font-size: 1.4em;
+        }
+    }
+</style>
+</head>
+<body>
+
+
+<div class="chatbox">
+    <h2>Chatbot por Voz</h2>
+    <button onclick="ouvir()">Falar Agora</button>
+    <div id="respostaTexto"></div>
+</div>
+
+<script>
+const pergunta = ["o que significa cada letra da escala de apgar",
+    "quais são os tipos de parto",
+    "quais as duas primeiras vacinas ao nascer que o recém nascido deve tomar",
+    "o que é icterícia",
+    "quais são os métodos abortivos"
+];
+
+
+const resposta =[ "a- aparência p- pulso g- gesto a- atividade r- respiração",
+    "natural, normal e cesareana.",
+    "bcg e hepatite b",
+    "é o excesso de hiperbilirrubinemia",
+    "curetagem, aspiração intrauterina, pílulas abortivas(misoprostol) e injeção digoxina."
+];
+
+function falar(texto) {
+    // Faz o navegador falar o texto
+    const discurso = new SpeechSynthesisUtterance(texto);
+    discurso.lang = "pt-BR";
+    discurso.rate = 2;
+    window.speechSynthesis.speak(discurso);
+     // Mostra a resposta na tela
+    document.getElementById("respostaTexto").innerText = texto;
+}
+
+function ouvir() {
+    const reconhecer = new webkitSpeechRecognition();
+    reconhecer.lang = "pt-BR";
+    reconhecer.start();
+
+    reconhecer.onresult = function(event) {
+        const textoFalado = event.results[0][0].transcript.toLowerCase();
+
+        for (let i = 0; i < pergunta.length; i++) {
+            if (textoFalado.includes(pergunta[i])) {
+                falar(resposta[i]);
+                return;
+            }
+        }
+
+        falar("Desculpe, eu não entendi.");
+    };
+}
+</script>
+</body>
+</html>
